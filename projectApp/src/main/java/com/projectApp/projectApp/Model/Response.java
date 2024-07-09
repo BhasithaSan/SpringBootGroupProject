@@ -1,21 +1,22 @@
 package com.projectApp.projectApp.Model;
 
-public class ErrorResponse {
-    private String error;
+public class Response {
+    private String status;
     private String message;
 
-    public ErrorResponse(String error, String message) {
-        this.error = error;
+    public Response(String status, String message) {
+        this.status = status;
         this.message = message;
     }
 
     // Getters and setters
-    public String getError() {
-        return error;
+
+    public String getStatus() {
+        return status;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getMessage() {

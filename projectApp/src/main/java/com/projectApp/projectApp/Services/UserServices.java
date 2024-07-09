@@ -42,14 +42,31 @@ public class UserServices {
         }
     }
 
-    public Optional<User> getUser(LoginUserDto loginUserDto) {
+    public String getUser(LoginUserDto loginUserDto) {
         try {
-            System.out.println(loginUserDto.getEmail());
-            System.out.println(loginUserDto.getPassword());
-            Optional<User> user= userRepository.findByEmailAndPassword(loginUserDto.getEmail(),loginUserDto.getPassword());
 
 
-            return user;
+
+            Optional<User> optionalUserEmail=userRepository.findByEmail(loginUserDto.getEmail());
+
+
+            if(optionalUserEmail.isPresent()) {
+
+                Optional<User> user = userRepository.findByEmailAndPassword(loginUserDto.getEmail(), loginUserDto.getPassword());
+
+                if(user.isPresent()){
+                    return "user found";
+                }
+                else{
+                    return "invalid password";
+                }
+
+            }
+            else{
+                return "user not found in given email";
+            }
+
+
         } catch (DataAccessException e) {
             throw new DatabaseException("Error accessing user data", e);
         }

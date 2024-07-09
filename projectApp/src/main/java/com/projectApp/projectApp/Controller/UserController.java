@@ -1,7 +1,6 @@
 package com.projectApp.projectApp.Controller;
 
 
-import com.projectApp.projectApp.Entity.User;
 import com.projectApp.projectApp.Exceptions.DatabaseException;
 import com.projectApp.projectApp.Model.LoginUserDto;
 import com.projectApp.projectApp.Services.UserServices;
@@ -12,9 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.projectApp.projectApp.Model.UserDto;
-import com.projectApp.projectApp.Model.ErrorResponse;
-
-import java.util.Optional;
+import com.projectApp.projectApp.Model.Response;
 
 
 @RequestMapping("/Api")
@@ -32,34 +29,35 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public String userRegistration(@RequestBody UserDto userDto){
-
-        String message =userServices.insertUser(userDto);
-
-        return message;
-
+    public ResponseEntity<String> userRegistration(@RequestBody UserDto userDto) {
+        String message = userServices.insertUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(message);
     }
+
+
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginUserDto loginUserDto) {
 
 
         try {
-            Optional<User> userOptional = userServices.getUser(loginUserDto);
-            if (userOptional.isPresent()) {
 
-                System.out.println("User found: ppppppppppppppppppppppp" );
-                System.out.println(userOptional.get());
+            String message = userServices.getUser(loginUserDto);
+            switch (message) {
+                case "user found":
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(new Response("success", "User found with provided credentials"));
+                case "user not found in given email":
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new Response("error", "No user found with provided email"));
+                default:
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body(new Response("error", "Password is incorrect for given email"));
 
-                return ResponseEntity.ok(userOptional.get());
-            } else {
-                System.out.println("User not found for: qqqqqqqqqqqqqqqqqqqqqqq" + loginUserDto);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ErrorResponse("User not found", "No user found with provided credentials"));
             }
         } catch (DatabaseException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Database error", e.getMessage()));
+                    .body(new Response("Database error", e.getMessage()));
     }}
 }
