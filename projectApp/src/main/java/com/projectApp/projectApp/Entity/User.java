@@ -8,14 +8,12 @@ import jakarta.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String email;
 
-    private int id;
     private String name;
 
-    private String email;
     @Column(name = "contact_no")
-    private  String contactNo;
+    private String contactNo;
 
     private String password;
 

@@ -32,9 +32,15 @@ public class UserServices {
                     userDto.getContactNo(),
                     userDto.getPassword()
             );
+            Optional<User> optionalUserEmail=userRepository.findByEmail(userDto.getEmail());
+            if(optionalUserEmail.isPresent()){
+                return "Email is already registered please log in";
+            }else{
+                userRepository.save(newUser);
+                return "User inserted successfully";
+            }
 
-            userRepository.save(newUser);
-            return "User inserted successfully";
+
         } catch (Exception e) {
 
             e.printStackTrace();

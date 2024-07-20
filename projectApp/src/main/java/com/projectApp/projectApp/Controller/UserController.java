@@ -29,9 +29,22 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> userRegistration(@RequestBody UserDto userDto) {
+    public ResponseEntity<?>  userRegistration(@RequestBody UserDto userDto) {
         String message = userServices.insertUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(message);
+
+        switch (message) {
+            case "User inserted successfully":
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new Response("success", message));
+
+            case "Email is already registered please log in":
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new Response("error", message));
+
+            default:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new Response("error", "Unexpected error occurred"));
+        }
     }
 
 
